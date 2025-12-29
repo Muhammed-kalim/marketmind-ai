@@ -1,14 +1,47 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import SplashScreen from '@/components/SplashScreen';
+import Login from '@/pages/Login';
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [showSplash, setShowSplash] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const loggedIn = localStorage.getItem('marketmind_logged_in');
+    if (loggedIn === 'true') {
+      setIsLoggedIn(true);
+      setShowSplash(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn && !showSplash) {
+      navigate('/dashboard');
+    }
+  }, [isLoggedIn, showSplash, navigate]);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  const handleLogin = () => {
+    localStorage.setItem('marketmind_logged_in', 'true');
+    setIsLoggedIn(true);
+    navigate('/dashboard');
+  };
+
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  return null;
 };
 
 export default Index;
